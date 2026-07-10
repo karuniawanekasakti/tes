@@ -29,15 +29,7 @@ button:hover { background: #1d4ed8; }
 <button id="saveContact">Save Contact</button>
 
 <script>
-const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:Karuniawan Kaka
-ORG:PT Example
-TITLE:Software Engineer
-TEL;TYPE=CELL:+6281234567890
-EMAIL:karuniawan@email.com
-URL:https://example.com
-END:VCARD`;
+const vcard = `BEGIN:VCARD\r\nVERSION:3.0\r\nFN:Karuniawan Kaka\r\nORG:PT Example\r\nTITLE:Software Engineer\r\nTEL;TYPE=CELL:+6281234567890\r\nEMAIL:karuniawan@email.com\r\nURL:https://example.com\r\nEND:VCARD`;
 
 function isIOS() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -48,19 +40,18 @@ function isAndroid() {
 }
 
 document.getElementById("saveContact").addEventListener("click", () => {
-    const blob = new Blob([vcard], { type: "text/x-vcard" });
 
     if (isIOS()) {
-        // iOS Safari: native handler, langsung muncul Contact Card
-        const url = URL.createObjectURL(blob);
-        window.location.href = url;
-        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        // iOS: pakai <a href="data:..."> yang di-click langsung di event handler
+        // Harus dalam user gesture (click), tidak boleh async/setTimeout
+        const dataUri = "data:text/x-vcard;charset=utf-8," + encodeURIComponent(vcard);
+        const a = document.createElement("a");
+        a.href = dataUri;
+        a.click();
         return;
     }
 
     if (isAndroid()) {
-        // Android: encode vCard ke data URI dan buka via intent
-        // Intent URI langsung membuka app Contacts tanpa download
         const encoded = encodeURIComponent(vcard);
         const intentUrl =
             `intent:data:text/x-vcard,${encoded}#Intent;` +
@@ -71,7 +62,8 @@ document.getElementById("saveContact").addEventListener("click", () => {
         return;
     }
 
-    // Desktop fallback: download file .vcf
+    // Desktop fallback
+    const blob = new Blob([vcard], { type: "text/x-vcard" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
