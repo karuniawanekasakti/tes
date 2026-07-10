@@ -8,8 +8,10 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 12px;
     height: 100vh;
     background: #f4f4f4;
 }
@@ -23,13 +25,22 @@ button {
     cursor: pointer;
 }
 button:hover { background: #1d4ed8; }
+#debug {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    max-width: 300px;
+}
 </style>
 </head>
 <body>
 <button id="saveContact">Save Contact</button>
+<div id="debug"></div>
 
 <script>
 const vcard = `BEGIN:VCARD\r\nVERSION:3.0\r\nFN:Karuniawan Kaka\r\nORG:PT Example\r\nTITLE:Software Engineer\r\nTEL;TYPE=CELL:+6281234567890\r\nEMAIL:karuniawan@email.com\r\nURL:https://example.com\r\nEND:VCARD`;
+
+const debug = document.getElementById("debug");
 
 function isIOS() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -42,8 +53,7 @@ function isAndroid() {
 document.getElementById("saveContact").addEventListener("click", () => {
 
     if (isIOS()) {
-        // iOS: pakai <a href="data:..."> yang di-click langsung di event handler
-        // Harus dalam user gesture (click), tidak boleh async/setTimeout
+        debug.textContent = "iOS detected → data URI";
         const dataUri = "data:text/x-vcard;charset=utf-8," + encodeURIComponent(vcard);
         const a = document.createElement("a");
         a.href = dataUri;
@@ -52,17 +62,22 @@ document.getElementById("saveContact").addEventListener("click", () => {
     }
 
     if (isAndroid()) {
-        const encoded = encodeURIComponent(vcard);
-        const intentUrl =
-            `intent:data:text/x-vcard,${encoded}#Intent;` +
-            `action=android.intent.action.VIEW;` +
-            `type=text/x-vcard;` +
-            `end`;
-        window.location.href = intentUrl;
+        debug.textContent = "Android detected → trying download .vcf";
+        
+        // Download blob .vcf — Chrome Android akan auto-open via app Contacts
+        const blob = new Blob([vcard], { type: "text/x-vcard" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "contact.vcf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
         return;
     }
 
-    // Desktop fallback
+    debug.textContent = "Desktop detected → download .vcf";
     const blob = new Blob([vcard], { type: "text/x-vcard" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
