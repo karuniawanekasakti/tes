@@ -4,42 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Save Contact</title>
-
 <style>
-body{
-    font-family:Arial, sans-serif;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background:#f4f4f4;
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f4f4f4;
 }
-
-button{
-    padding:15px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:10px;
-    background:#2563eb;
-    color:white;
-    cursor:pointer;
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
 }
-
-button:hover{
-    background:#1d4ed8;
-}
+button:hover { background: #1d4ed8; }
 </style>
-
 </head>
 <body>
-
 <button id="saveContact">Save Contact</button>
 
 <script>
-
-document.getElementById("saveContact").addEventListener("click", () => {
-
-    const vcard = `BEGIN:VCARD
+const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:Karuniawan Kaka
 ORG:PT Example
@@ -49,17 +39,45 @@ EMAIL:karuniawan@email.com
 URL:https://example.com
 END:VCARD`;
 
-    const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+document.getElementById("saveContact").addEventListener("click", async () => {
+    const blob = new Blob([vcard], { type: "text/vcard" });
 
+    // Strategi 1: Web Share API (Android Chrome modern - tidak ada visible download)
+    if (navigator.share && navigator.canShare) {
+        const file = new File([blob], "contact.vcf", { type: "text/vcard" });
+        if (navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: "Karuniawan Kaka",
+                });
+                return; // Berhasil, stop di sini
+            } catch (err) {
+                // User cancel atau share gagal, lanjut ke fallback
+                if (err.name === "AbortError") return;
+            }
+        }
+    }
+
+    // Strategi 2: iOS Safari & fallback lainnya
     const url = URL.createObjectURL(blob);
 
-    window.location.href = url;
+    // iOS Safari: langsung assign ke location
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        window.location.href = url;
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        return;
+    }
 
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-
+    // Android & desktop fallback: trigger download via <a>
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "contact.vcf";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
 });
-
 </script>
-
 </body>
 </html>
