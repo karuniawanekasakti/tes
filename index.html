@@ -39,37 +39,40 @@ EMAIL:karuniawan@email.com
 URL:https://example.com
 END:VCARD`;
 
-document.getElementById("saveContact").addEventListener("click", async () => {
-    const blob = new Blob([vcard], { type: "text/vcard" });
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
 
-    // Strategi 1: Web Share API (Android Chrome modern - tidak ada visible download)
-    if (navigator.share && navigator.canShare) {
-        const file = new File([blob], "contact.vcf", { type: "text/vcard" });
-        if (navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    files: [file],
-                    title: "Karuniawan Kaka",
-                });
-                return; // Berhasil, stop di sini
-            } catch (err) {
-                // User cancel atau share gagal, lanjut ke fallback
-                if (err.name === "AbortError") return;
-            }
-        }
-    }
+function isAndroid() {
+    return /Android/.test(navigator.userAgent);
+}
 
-    // Strategi 2: iOS Safari & fallback lainnya
-    const url = URL.createObjectURL(blob);
+document.getElementById("saveContact").addEventListener("click", () => {
+    const blob = new Blob([vcard], { type: "text/x-vcard" });
 
-    // iOS Safari: langsung assign ke location
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    if (isIOS()) {
+        // iOS Safari: native handler, langsung muncul Contact Card
+        const url = URL.createObjectURL(blob);
         window.location.href = url;
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
         return;
     }
 
-    // Android & desktop fallback: trigger download via <a>
+    if (isAndroid()) {
+        // Android: encode vCard ke data URI dan buka via intent
+        // Intent URI langsung membuka app Contacts tanpa download
+        const encoded = encodeURIComponent(vcard);
+        const intentUrl =
+            `intent:data:text/x-vcard,${encoded}#Intent;` +
+            `action=android.intent.action.VIEW;` +
+            `type=text/x-vcard;` +
+            `end`;
+        window.location.href = intentUrl;
+        return;
+    }
+
+    // Desktop fallback: download file .vcf
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "contact.vcf";
