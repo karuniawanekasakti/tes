@@ -1,17 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Save Contact</title>
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:#f4f4f4;
+}
+
+button{
+    padding:15px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+</style>
+
 </head>
 <body>
-    <button id="saveContact">Save Contact</button>
 
-    <script>
-    document.getElementById("saveContact").addEventListener("click", () => {
-        window.location.href = "https://adhit007.github.io/Contact/co_Contact.vcf";
-    });
-    </script>
+<button id="saveContact">Save Contact</button>
+
+<script>
+
+document.getElementById("saveContact").addEventListener("click", () => {
+
+    const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:Karuniawan Kaka
+ORG:PT Example
+TITLE:Software Engineer
+TEL;TYPE=CELL:+6281234567890
+EMAIL:karuniawan@email.com
+URL:https://example.com
+END:VCARD`;
+
+    const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+
+    const url = URL.createObjectURL(blob);
+
+    window.location.href = url;
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+});
+
+</script>
+
 </body>
 </html>
