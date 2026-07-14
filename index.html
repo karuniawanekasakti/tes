@@ -1,167 +1,109 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kontak Eka Sak</title>
+  <style>
+    * { box-sizing: border-box; }
 
-    <title>Kartu Nama Digital</title>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    .card {
+      width: 100%;
+      max-width: 380px;
+      padding: 30px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background: #f3f4f6;
-            font-family: Arial, sans-serif;
-        }
+    .avatar {
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: #111827;
+      color: white;
+      font-size: 32px;
+      font-weight: 700;
+    }
 
-        .card {
-            width: 100%;
-            max-width: 380px;
-            padding: 30px;
-            text-align: center;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
 
-        .avatar {
-            width: 110px;
-            height: 110px;
-            margin-bottom: 16px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #e5e7eb;
-        }
+    .company {
+      margin: 0 0 24px;
+      color: #6b7280;
+    }
 
-        h1 {
-            margin: 0 0 8px;
-            font-size: 25px;
-        }
+    .info {
+      margin-bottom: 24px;
+      line-height: 1.9;
+    }
 
-        .position {
-            margin: 0 0 5px;
-            color: #4b5563;
-        }
+    .info a {
+      color: #111827;
+      text-decoration: none;
+    }
 
-        .company {
-            margin: 0 0 22px;
-            color: #6b7280;
-        }
+    .button {
+      display: block;
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: #111827;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 700;
+    }
 
-        .contact-info {
-            margin-bottom: 24px;
-            line-height: 1.8;
-        }
+    .button:active {
+      transform: scale(0.99);
+    }
 
-        .contact-info a {
-            color: #111827;
-            text-decoration: none;
-        }
-
-        .button {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: #111827;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background: #374151;
-        }
-    </style>
+    .hint {
+      margin: 12px 0 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
 </head>
-
 <body>
+  <main class="card">
+    <div class="avatar">ES</div>
 
-    <main class="card">
-        <img
-            class="avatar"
-            src="profile.jpg"
-            alt="Foto profil"
-        >
+    <h1>Eka Sak</h1>
+    <p class="company">mit</p>
 
-        <h1>Eka Karuniawan</h1>
+    <div class="info">
+      <div><a href="tel:+635643565">+63 564 3565</a></div>
+      <div><a href="mailto:wkwk@mail.com">wkwk@mail.com</a></div>
+    </div>
 
-        <p class="position">Software Engineer</p>
-        <p class="company">PT MTI</p>
+    <a class="button" href="contact.vcf" type="text/vcard">
+      Add to Contact
+    </a>
 
-        <div class="contact-info">
-            <div>
-                <a href="tel:+628123456789">
-                    +62 812-3456-789
-                </a>
-            </div>
-
-            <div>
-                <a href="mailto:eka@example.com">
-                    eka@example.com
-                </a>
-            </div>
-
-            <div>
-                <a href="https://example.com" target="_blank">
-                    example.com
-                </a>
-            </div>
-        </div>
-
-        <button class="button" onclick="downloadVCard()">
-            Add to Contact
-        </button>
-    </main>
-
-    <script>
-        function downloadVCard() {
-            const vCard = [
-                "BEGIN:VCARD",
-                "VERSION:3.0",
-                "N:Karuniawan;Eka;;;",
-                "FN:Eka Karuniawan",
-                "ORG:PT MTI",
-                "TITLE:Software Engineer",
-                "TEL;TYPE=CELL:+628123456789",
-                "EMAIL;TYPE=WORK:eka@example.com",
-                "URL:https://example.com",
-                "ADR;TYPE=WORK:;;Jakarta;;;Indonesia",
-                "END:VCARD"
-            ].join("\r\n");
-
-            const blob = new Blob(
-                [vCard],
-                {
-                    type: "text/vcard;charset=utf-8"
-                }
-            );
-
-            const url = URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-
-            link.href = url;
-            link.download = "eka-karuniawan.vcf";
-
-            document.body.appendChild(link);
-
-            link.click();
-            link.remove();
-
-            URL.revokeObjectURL(url);
-        }
-    </script>
-
+    <p class="hint">
+      Pada Chromium, file VCF mungkin diunduh terlebih dahulu.
+      Buka file tersebut untuk menambahkan kontak.
+    </p>
+  </main>
 </body>
 </html>
